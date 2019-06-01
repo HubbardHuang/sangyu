@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include "postfix_expression.h"
 #include "regex_preprocessor.h"
-#include "regex_to_nfa.h"
 
 int
 main(int argc, char** argv) {
@@ -33,7 +33,7 @@ main(int argc, char** argv) {
         }
     }
     std::cout << std::endl;
-    sangyu::RegexNfaConverter rnc(result);
+    sangyu::PostfixExpressionConverter rnc(result);
     std::string r2 = rnc.GetResult();
     for (auto c : r2) {
         switch (c) {
