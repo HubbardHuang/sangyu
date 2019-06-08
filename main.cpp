@@ -1,16 +1,15 @@
 #include <iostream>
 #include <string>
 
-#include "postfix_expression.h"
-#include "regex_preprocessor.h"
+#include "postfix_regex.h"
+#include "prefix_regex.h"
 
 int
 main(int argc, char** argv) {
-    std::string regex = "(ab|c*de";
-    sangyu::RegexPreprocessor rp(regex);
-    std::string result = rp.Run();
-    for (auto c : result) {
-        // std::cout << static_cast<int>(c) << " ";
+    std::string regex = "(ab|c)*de";
+    sangyu::PrefixRegex prefix(regex);
+    std::string prefix_value = prefix.GetValue();
+    for (auto c : prefix_value) {
         switch (c) {
         case -1:
             std::cout << "(";
@@ -33,9 +32,9 @@ main(int argc, char** argv) {
         }
     }
     std::cout << std::endl;
-    sangyu::PostfixExpressionConverter rnc(result);
-    std::string r2 = rnc.GetResult();
-    for (auto c : r2) {
+    sangyu::PostfixRegex postfix(prefix);
+    std::string postfix_value = postfix.GetValue();
+    for (auto c : postfix_value) {
         switch (c) {
         case -1:
             std::cout << "(";
