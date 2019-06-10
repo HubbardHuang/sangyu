@@ -11,6 +11,7 @@ protected:
     using unit_type = std::string::value_type;
 
 protected:
+    enum { kContentTypes = 129 };
     static const unit_type kLeftBracket_;
     static const unit_type kRightBracket_;
     static const unit_type kClosureOperator_;
@@ -20,11 +21,15 @@ protected:
     static const unit_type kStopSymbol_;
 
 protected:
+    static const unit_type kEpsilon; // null character
+
+protected:
     static std::map<unit_type, size_t> priority;
 
 protected:
-    static bool IsOperator(unit_type u);
     static bool IsValueUnit(unit_type u);
+    static bool IsOperator(unit_type u);
+    static bool IsValidOperator(unit_type u);
 };
 
 } // namespace sangyu

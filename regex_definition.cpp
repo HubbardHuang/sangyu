@@ -8,7 +8,8 @@ const RegexDefinition::unit_type RegexDefinition::kLeftBracket_ = -1,
                                  RegexDefinition::kOrOperator_ = -4,
                                  RegexDefinition::kJoinOperator_ = -5,
                                  RegexDefinition::kStartSymbol_ = 1,
-                                 RegexDefinition::kStopSymbol_ = 2;
+                                 RegexDefinition::kStopSymbol_ = 2,
+                                 RegexDefinition::kEpsilon = kContentTypes - 1;
 
 std::map<RegexDefinition::unit_type, size_t> RegexDefinition::priority = {
     { RegexDefinition::kOrOperator_, 1 },
@@ -21,6 +22,11 @@ std::map<RegexDefinition::unit_type, size_t> RegexDefinition::priority = {
 bool
 RegexDefinition::IsOperator(RegexDefinition::unit_type u) {
     return u < 0;
+}
+
+bool
+RegexDefinition::IsValidOperator(RegexDefinition::unit_type u) {
+    return u == kClosureOperator_ || u == kOrOperator_ || u == kJoinOperator_;
 }
 
 bool
