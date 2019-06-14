@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+#include "dfa.h"
 #include "nfa.h"
 #include "postfix_regex.h"
 #include "prefix_regex.h"
@@ -54,13 +55,26 @@ main(int argc, char** argv) {
         std::cout << std::to_string(v[2]) << " ";
         std::cout << '}' << std::endl;
     }
-    std::cout << '{' << ' ';
-    for (auto c : lable) {
-        std::cout << static_cast<char>(c) << " ";
+    // std::cout << '{' << ' ';
+    // for (auto c : lable) {
+    //     std::cout << static_cast<char>(c) << " ";
+    // }
+    // std::cout << '}' << std::endl;
+    // std::cout << "start_vertex: " << se[0] << " ";
+    // std::cout << "end_vertex: " << se[1] << std::endl;
+
+    auto sets = nfa.GetEpsilonClosure();
+    for (int i = 0; i < sets.size(); i++) {
+        std::cout << "vertex " << i << ": ";
+        for (auto v : sets[i]) {
+            std::cout << v << ' ';
+        }
+        std::cout << std::endl;
     }
-    std::cout << '}' << std::endl;
-    std::cout << "start_vertex: " << se[0] << " ";
-    std::cout << "end_vertex: " << se[1] << std::endl;
+    std::cout << "--------------------------" << std::endl;
+
+    sangyu::DFA dfa(nfa);
+    dfa.Test();
 
     return 0;
 }

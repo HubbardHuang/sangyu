@@ -6,36 +6,45 @@
 #include <set>
 #include <vector>
 
-#include "regex_definition.h"
+#include "finite_automata.h"
 
 namespace sangyu {
 
 class PostfixRegex;
 
-class NFA : public RegexDefinition {
+class NFA : public FiniteAutomata {
 private:
-    enum { kWeightTypes = kContentTypes };
-    using Vertex = int;
-    using VertexPair = std::pair<Vertex, Vertex>;
-    using Weight = unit_type;
-    std::map<VertexPair, Weight> graph_;
-    std::vector<std::map<Weight, std::set<Vertex>>> nfa_;
-    Vertex vertex_max;
-    Vertex start_vertex_;
-    Vertex end_vertex_;
-    std::set<Weight> labels_;
+    enum { kSymbolTypes = kContentTypes };
+    using State = NfaState;
+    using StatePair = std::pair<State /*start*/, State /*end*/>;
+    using Graph = NfaGraph;
+    std::map<StatePair, Symbol> nfa_buffer_;
+    Graph nfa_;
+    State state_num_max_;
+    State start_state_;
+    State end_state_;
+    std::vector<std::set<State>> epsilon_closure_;
 
 private:
-    Vertex AssignVertex(void);
-    void DeleteOneVertex(VertexPair& vp);
-    void AddIntoGraph(const VertexPair& vp, const Weight& w);
+    State AssignVertex(void);
+    void DeleteOneVertex(StatePair& sp);
+    void AddIntoGraph(const StatePair& sp, const Symbol& sbl);
 
 public:
     explicit NFA(const PostfixRegex& source);
     ~NFA() = default;
 
 public:
+    std::set<State> FindClosure(const State& start, const Symbol& sbl);
+
+public:
     std::vector<std::vector<int>> Print(void);
+    const State& GetStartVertex(void) const;
+    const State& GetVertexMax(void) const;
+    const State& GetEndVertex(void) const;
+    const Graph& GetGraph(void) const;
+    const std::set<Symbol>& GetLables(void) const;
+    const std::vector<std::set<State>>& GetEpsilonClosure(void) const;
 
 private:
     NFA() = delete;

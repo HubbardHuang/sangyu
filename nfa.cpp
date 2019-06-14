@@ -8,134 +8,190 @@
 namespace sangyu {
 
 NFA::NFA(const PostfixRegex& source)
-  : vertex_max(-1) {
-    std::queue<VertexPair> vertex_pair_queue;
+  : state_num_max_(-1) {
+    std::queue<StatePair> state_pair_queue;
     std::string postfix_regex = source.GetValue();
     for (auto ch : postfix_regex) {
         if (IsValidOperator(ch)) {
-            if (vertex_pair_queue.empty()) {
+            if (state_pair_queue.empty()) {
                 continue;
             }
             if (ch == kJoinOperator_) {
-                VertexPair vp1, vp2;
-                vp1 = vertex_pair_queue.front();
-                vertex_pair_queue.pop();
-                vp2 = vertex_pair_queue.front();
-                vertex_pair_queue.pop();
-                DeleteOneVertex(vp2);
-
-                // start and end
-                end_vertex_ = vp2.second;
-
-                vertex_pair_queue.push(VertexPair(vp1.first, vp2.second));
+                StatePair sp1, sp2;
+                sp1 = state_pair_queue.front();
+                state_pair_queue.pop();
+                sp2 = state_pair_queue.front();
+                state_pair_queue.pop();
+                DeleteOneVertex(sp2);
+                end_state_ = sp2.second; // Update the end state
+                state_pair_queue.push(StatePair(sp1.first, sp2.second));
             } else if (ch == kOrOperator_) {
-                VertexPair vp1, vp2;
-                vp1 = vertex_pair_queue.front();
-                vertex_pair_queue.pop();
-                vp2 = vertex_pair_queue.front();
-                vertex_pair_queue.pop();
-                VertexPair new_vp;
-                new_vp.first = AssignVertex();
-                new_vp.second = AssignVertex();
-                AddIntoGraph(VertexPair(new_vp.first, vp1.first), kEpsilon);
-                AddIntoGraph(VertexPair(new_vp.first, vp2.first), kEpsilon);
-                AddIntoGraph(VertexPair(vp1.second, new_vp.second), kEpsilon);
-                AddIntoGraph(VertexPair(vp2.second, new_vp.second), kEpsilon);
-                // start and end
-                start_vertex_ = new_vp.first;
-                end_vertex_ = new_vp.second;
+                StatePair sp1, sp2;
+                sp1 = state_pair_queue.front();
+                state_pair_queue.pop();
+                sp2 = state_pair_queue.front();
+                state_pair_queue.pop();
+                StatePair new_sp;
+                new_sp.first = AssignVertex();
+                new_sp.second = AssignVertex();
+                AddIntoGraph(StatePair(new_sp.first, sp1.first), kEpsilon);
+                AddIntoGraph(StatePair(new_sp.first, sp2.first), kEpsilon);
+                AddIntoGraph(StatePair(sp1.second, new_sp.second), kEpsilon);
+                AddIntoGraph(StatePair(sp2.second, new_sp.second), kEpsilon);
+                // Update the start and end state
+                start_state_ = new_sp.first;
+                end_state_ = new_sp.second;
 
-                vertex_pair_queue.push(new_vp);
+                state_pair_queue.push(new_sp);
             } else if (ch == kClosureOperator_) {
-                VertexPair vp = vertex_pair_queue.front();
-                vertex_pair_queue.pop();
-                VertexPair new_vp;
-                new_vp.first = AssignVertex();
-                new_vp.second = AssignVertex();
-                AddIntoGraph(VertexPair(new_vp.first, new_vp.second), kEpsilon);
-                AddIntoGraph(VertexPair(new_vp.first, vp.first), kEpsilon);
-                AddIntoGraph(VertexPair(vp.second, new_vp.second), kEpsilon);
-                AddIntoGraph(VertexPair(vp.second, vp.first), kEpsilon);
-                // start and end
-                start_vertex_ = new_vp.first;
-                end_vertex_ = new_vp.second;
+                StatePair sp = state_pair_queue.front();
+                state_pair_queue.pop();
+                StatePair new_sp;
+                new_sp.first = AssignVertex();
+                new_sp.second = AssignVertex();
+                AddIntoGraph(StatePair(new_sp.first, new_sp.second), kEpsilon);
+                AddIntoGraph(StatePair(new_sp.first, sp.first), kEpsilon);
+                AddIntoGraph(StatePair(sp.second, new_sp.second), kEpsilon);
+                AddIntoGraph(StatePair(sp.second, sp.first), kEpsilon);
+                // Update the start and end state
+                start_state_ = new_sp.first;
+                end_state_ = new_sp.second;
 
-                vertex_pair_queue.push(new_vp);
+                state_pair_queue.push(new_sp);
             }
         } else {
-            VertexPair vp;
-            vp.first = AssignVertex();
-            vp.second = AssignVertex();
-            Weight w = ch;
-            labels_.insert(w);
-            AddIntoGraph(vp, w);
+            StatePair sp;
+            sp.first = AssignVertex();
+            sp.second = AssignVertex();
+            Symbol sbl = ch;
+            symbols_.insert(sbl);
+            AddIntoGraph(sp, sbl);
 
-            // start and end
-            if (vertex_pair_queue.empty()) {
-                start_vertex_ = vp.first;
+            // Update the start and end state
+            if (state_pair_queue.empty()) {
+                start_state_ = sp.first;
             }
-            end_vertex_ = vp.second;
+            end_state_ = sp.second;
 
-            vertex_pair_queue.push(vp);
+            state_pair_queue.push(sp);
         }
     }
 
-    // Initialize [nfa_] with [graph_]
-    nfa_ = std::vector<std::map<Weight, std::set<Vertex>>>(vertex_max + 1);
-    for (auto ve : graph_) {
-        VertexPair vp = ve.first;
-        Weight w = ve.second;
-        nfa_[vp.first][w].insert(vp.second);
+    // Initialize [nfa_] with [nfa_buffer_]
+    nfa_ = std::vector<std::map<Symbol, std::set<State>>>(state_num_max_ + 1);
+    for (auto sp_w : nfa_buffer_) {
+        StatePair sp = sp_w.first;
+        Symbol sbl = sp_w.second;
+        nfa_[sp.first][sbl].insert(sp.second);
+    }
+    // Find epsilon closure of each state for DFA conversion
+    epsilon_closure_.resize(state_num_max_ + 1);
+    for (int i = 0; i <= state_num_max_; i++) {
+        epsilon_closure_[i] = FindClosure(i, kEpsilon);
     }
 }
 
-NFA::Vertex
+NFA::State
 NFA::AssignVertex(void) {
-    return ++vertex_max;
+    return ++state_num_max_;
 }
 
 void
-NFA::DeleteOneVertex(NFA::VertexPair& vp) {
-    auto target = graph_.find(VertexPair(vertex_max - 1, vertex_max));
-    --vertex_max;
-    Weight w = target->second;
-    vp = { vertex_max - 1, vertex_max };
-    graph_.erase(target);
-    graph_.insert({ vp, w });
+NFA::DeleteOneVertex(NFA::StatePair& sp) {
+    // Merge "a -> x" and "x -> b" into "a -> b"
+    auto target =
+      nfa_buffer_.find(StatePair(state_num_max_ - 1, state_num_max_));
+    --state_num_max_;
+    Symbol sbl = target->second;
+    sp = { state_num_max_ - 1, state_num_max_ };
+    nfa_buffer_.erase(target);
+    nfa_buffer_.insert({ sp, sbl });
 }
 
 void
-NFA::AddIntoGraph(const VertexPair& vp, const Weight& w) {
-    graph_.insert({ vp, w });
+NFA::AddIntoGraph(const StatePair& sp, const Symbol& sbl) {
+    nfa_buffer_.insert({ sp, sbl });
+}
+
+std::set<NFA::State>
+NFA::FindClosure(const State& start, const Symbol& sbl) {
+    std::set<State> closure;
+    std::queue<State> state_queue;
+    state_queue.push(start);
+    while (!state_queue.empty()) {
+        State curr = state_queue.front();
+        state_queue.pop();
+        auto target_ws = nfa_[curr].find(sbl);
+        if (target_ws != nfa_[curr].end()) {
+            for (auto i : target_ws->second) {
+                if (closure.find(i) == closure.end()) {
+                    state_queue.push(i);
+                    closure.insert(i);
+                }
+            }
+        }
+    }
+    closure.insert(start);
+    return closure;
 }
 
 std::vector<std::vector<int>>
 NFA::Print(void) {
     std::vector<std::vector<int>> result;
     for (int i = 0; i < nfa_.size(); i++) {
-        for (auto ev : nfa_[i]) {
-            for (auto v : ev.second) {
+        for (auto ws : nfa_[i]) {
+            for (auto s : ws.second) {
                 std::vector<int> buffer;
                 buffer.push_back(i);
-                if (ev.first == kEpsilon) {
+                if (ws.first == kEpsilon) {
                     buffer.push_back('#');
                 } else {
-                    buffer.push_back(ev.first);
+                    buffer.push_back(ws.first);
                 }
-                buffer.push_back(v);
+                buffer.push_back(s);
                 result.push_back(buffer);
             }
         }
     }
     {
         std::vector<int> buffer;
-        for (auto ch : labels_) {
+        for (auto ch : symbols_) {
             buffer.push_back(ch);
         }
         result.push_back(buffer);
     }
-    { result.push_back({ start_vertex_, end_vertex_ }); }
+    result.push_back({ start_state_, end_state_ });
     return result;
+}
+
+const NFA::State&
+NFA::GetStartVertex(void) const {
+    return start_state_;
+}
+
+const NFA::State&
+NFA::GetEndVertex(void) const {
+    return end_state_;
+}
+
+const NFA::State&
+NFA::GetVertexMax(void) const {
+    return state_num_max_;
+}
+
+const NFA::Graph&
+NFA::GetGraph(void) const {
+    return nfa_;
+}
+
+const std::set<NFA::Symbol>&
+NFA::GetLables(void) const {
+    return symbols_;
+}
+
+const std::vector<std::set<NFA::State>>&
+NFA::GetEpsilonClosure(void) const {
+    return epsilon_closure_;
 }
 
 } // namespace sangyu
