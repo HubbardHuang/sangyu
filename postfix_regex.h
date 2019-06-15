@@ -8,7 +8,7 @@
 
 namespace sangyu {
 
-class PrefixRegex;
+class PreprocessedRegex;
 
 class PostfixRegex : public RegexDefinition {
 private:
@@ -19,7 +19,7 @@ private:
 
 public:
     ~PostfixRegex() = default;
-    explicit PostfixRegex(const PrefixRegex& source);
+    explicit PostfixRegex(const PreprocessedRegex& source);
     const std::string& GetValue(void) const;
 
 private:

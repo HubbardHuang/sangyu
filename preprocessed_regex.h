@@ -1,5 +1,5 @@
-#ifndef PREFIX_REGEX_H
-#define PREFIX_REGEX_H
+#ifndef PREPROCESSED_REGEX_H
+#define PREPROCESSED_REGEX_H
 
 #include <list>
 #include <string>
@@ -8,7 +8,7 @@
 
 namespace sangyu {
 
-class PrefixRegex : public RegexDefinition {
+class PreprocessedRegex : public RegexDefinition {
 private:
     std::list<unit_type> buffer_;
     std::string prefix_regex_;
@@ -20,16 +20,16 @@ private:
     static void AddStartSymbolAndStopSymbol(std::list<unit_type>& buffer);
 
 public:
-    ~PrefixRegex() = default;
-    PrefixRegex(const std::string& source);
+    ~PreprocessedRegex() = default;
+    PreprocessedRegex(const std::string& source);
     const std::string& GetValue(void) const;
 
 private:
-    PrefixRegex() = delete;
-    PrefixRegex(const PrefixRegex&) = delete;
-    PrefixRegex(PrefixRegex&&) = delete;
-    void operator=(const PrefixRegex&) = delete;
-    void operator=(PrefixRegex&&) = delete;
+    PreprocessedRegex() = delete;
+    PreprocessedRegex(const PreprocessedRegex&) = delete;
+    PreprocessedRegex(PreprocessedRegex&&) = delete;
+    void operator=(const PreprocessedRegex&) = delete;
+    void operator=(PreprocessedRegex&&) = delete;
 };
 
 } // namespace sangyu

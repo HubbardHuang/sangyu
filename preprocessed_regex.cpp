@@ -1,16 +1,16 @@
 #include <cctype>
 #include <vector>
 
-#include "prefix_regex.h"
+#include "preprocessed_regex.h"
 
 namespace sangyu {
 
-PrefixRegex::PrefixRegex(const std::string& source)
+PreprocessedRegex::PreprocessedRegex(const std::string& source)
   : buffer_(source.begin(), source.end())
   , prefix_regex_(ToPrefixExpression(buffer_)) {}
 
 std::string
-PrefixRegex::ToPrefixExpression(std::list<unit_type>& buffer) {
+PreprocessedRegex::ToPrefixExpression(std::list<unit_type>& buffer) {
     ReplaceOperators(buffer);
     AddJoinOperator(buffer);
     // AddStartSymbolAndStopSymbol(buffer);
@@ -18,12 +18,12 @@ PrefixRegex::ToPrefixExpression(std::list<unit_type>& buffer) {
 }
 
 const std::string&
-PrefixRegex::GetValue(void) const {
+PreprocessedRegex::GetValue(void) const {
     return prefix_regex_;
 }
 
 void
-PrefixRegex::ReplaceOperators(std::list<unit_type>& buffer) {
+PreprocessedRegex::ReplaceOperators(std::list<unit_type>& buffer) {
     if (buffer.empty()) {
         return;
     }
@@ -51,7 +51,7 @@ PrefixRegex::ReplaceOperators(std::list<unit_type>& buffer) {
 }
 
 void
-PrefixRegex::AddJoinOperator(std::list<unit_type>& buffer) {
+PreprocessedRegex::AddJoinOperator(std::list<unit_type>& buffer) {
     if (buffer.empty()) {
         return;
     }
@@ -70,7 +70,7 @@ PrefixRegex::AddJoinOperator(std::list<unit_type>& buffer) {
 }
 
 void
-PrefixRegex::AddStartSymbolAndStopSymbol(std::list<unit_type>& buffer) {
+PreprocessedRegex::AddStartSymbolAndStopSymbol(std::list<unit_type>& buffer) {
     buffer.push_front(kStartSymbol_);
     buffer.push_back(kStopSymbol_);
 }

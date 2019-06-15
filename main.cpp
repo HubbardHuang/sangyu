@@ -4,13 +4,13 @@
 #include "dfa.h"
 #include "nfa.h"
 #include "postfix_regex.h"
-#include "prefix_regex.h"
+#include "preprocessed_regex.h"
 
 int
 main(int argc, char** argv) {
     std::string regex = "(ab|c)*de";
-    sangyu::PrefixRegex prefix(regex);
-    sangyu::PostfixRegex postfix(prefix);
+    sangyu::PreprocessedRegex preprocessed(regex);
+    sangyu::PostfixRegex postfix(preprocessed);
     std::string postfix_value = postfix.GetValue();
     for (auto c : postfix_value) {
         switch (c) {

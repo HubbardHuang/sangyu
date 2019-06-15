@@ -3,11 +3,11 @@
 #include <vector>
 
 #include "postfix_regex.h"
-#include "prefix_regex.h"
+#include "preprocessed_regex.h"
 
 namespace sangyu {
 
-PostfixRegex::PostfixRegex(const PrefixRegex& source)
+PostfixRegex::PostfixRegex(const PreprocessedRegex& source)
   : postfix_regex_(ToPostfixExpression(source.GetValue())) {}
 
 const std::string&
