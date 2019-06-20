@@ -1,5 +1,7 @@
+#include <algorithm>
 #include <iostream>
 #include <queue>
+#include <stack>
 #include <string>
 
 #include "nfa.h"
@@ -9,43 +11,67 @@ namespace sangyu {
 
 NFA::NFA(const PostfixRegex& source)
   : state_num_max_(-1) {
-    std::queue<StatePair> state_pair_queue;
+    std::stack<StatePair> state_pair_stack;
     std::string postfix_regex = source.GetValue();
+    unit_type prev_operator = 0;
     for (auto ch : postfix_regex) {
         if (IsValidOperator(ch)) {
-            if (state_pair_queue.empty()) {
+            if (state_pair_stack.empty()) {
                 continue;
             }
             if (ch == kJoinOperator_) {
                 StatePair sp1, sp2;
-                sp1 = state_pair_queue.front();
-                state_pair_queue.pop();
-                sp2 = state_pair_queue.front();
-                state_pair_queue.pop();
-                DeleteOneVertex(sp2);
-                end_state_ = sp2.second; // Update the end state
-                state_pair_queue.push(StatePair(sp1.first, sp2.second));
+                sp1 = state_pair_stack.top();
+                state_pair_stack.pop();
+                sp2 = state_pair_stack.top();
+                state_pair_stack.pop();
+                // TODO: Optimize the if-else code block
+                if (sp1.first - sp2.second == 1) {
+                    DeleteOneVertex(sp1);
+                    end_state_ = sp1.second; // Update the end state
+                    start_state_ = sp2.first;
+                } else {
+                    AddIntoGraph(StatePair(sp2.second, sp1.first), kEpsilon);
+                    end_state_ = sp1.second; // Update the end state
+                    start_state_ = sp2.first;
+                }
+                // state_pair_stack.push(StatePair(sp1.first, sp2.second));
+                state_pair_stack.push(StatePair(sp2.first, sp1.second));
             } else if (ch == kOrOperator_) {
-                StatePair sp1, sp2;
-                sp1 = state_pair_queue.front();
-                state_pair_queue.pop();
-                sp2 = state_pair_queue.front();
-                state_pair_queue.pop();
-                StatePair new_sp;
-                new_sp.first = AssignVertex();
-                new_sp.second = AssignVertex();
-                AddIntoGraph(StatePair(new_sp.first, sp1.first), kEpsilon);
-                AddIntoGraph(StatePair(new_sp.first, sp2.first), kEpsilon);
-                AddIntoGraph(StatePair(sp1.second, new_sp.second), kEpsilon);
-                AddIntoGraph(StatePair(sp2.second, new_sp.second), kEpsilon);
-                // Update the start and end state
-                start_state_ = new_sp.first;
-                end_state_ = new_sp.second;
-
-                state_pair_queue.push(new_sp);
+                if (prev_operator != kOrOperator_) {
+                    StatePair sp1, sp2;
+                    sp1 = state_pair_stack.top();
+                    state_pair_stack.pop();
+                    sp2 = state_pair_stack.top();
+                    state_pair_stack.pop();
+                    StatePair new_sp;
+                    new_sp.first = AssignVertex();
+                    new_sp.second = AssignVertex();
+                    AddIntoGraph(StatePair(new_sp.first, sp1.first), kEpsilon);
+                    AddIntoGraph(StatePair(new_sp.first, sp2.first), kEpsilon);
+                    AddIntoGraph(StatePair(sp1.second, new_sp.second),
+                                 kEpsilon);
+                    AddIntoGraph(StatePair(sp2.second, new_sp.second),
+                                 kEpsilon);
+                    // Update the start and end state
+                    start_state_ = new_sp.first;
+                    end_state_ = new_sp.second;
+                    state_pair_stack.push(new_sp);
+                } else {
+                    StatePair master, slave;
+                    slave = state_pair_stack.top();
+                    state_pair_stack.pop();
+                    master = state_pair_stack.top();
+                    state_pair_stack.pop();
+                    AddIntoGraph(StatePair(master.first, slave.first),
+                                 kEpsilon);
+                    AddIntoGraph(StatePair(slave.second, master.second),
+                                 kEpsilon);
+                    state_pair_stack.push(master);
+                }
             } else if (ch == kClosureOperator_) {
-                StatePair sp = state_pair_queue.front();
-                state_pair_queue.pop();
+                StatePair sp = state_pair_stack.top();
+                state_pair_stack.pop();
                 StatePair new_sp;
                 new_sp.first = AssignVertex();
                 new_sp.second = AssignVertex();
@@ -57,8 +83,9 @@ NFA::NFA(const PostfixRegex& source)
                 start_state_ = new_sp.first;
                 end_state_ = new_sp.second;
 
-                state_pair_queue.push(new_sp);
+                state_pair_stack.push(new_sp);
             }
+            prev_operator = ch;
         } else {
             StatePair sp;
             sp.first = AssignVertex();
@@ -68,12 +95,12 @@ NFA::NFA(const PostfixRegex& source)
             AddIntoGraph(sp, sbl);
 
             // Update the start and end state
-            if (state_pair_queue.empty()) {
+            if (state_pair_stack.empty()) {
                 start_state_ = sp.first;
             }
             end_state_ = sp.second;
 
-            state_pair_queue.push(sp);
+            state_pair_stack.push(sp);
         }
     }
 
