@@ -21,6 +21,7 @@ public:
     ~PostfixRegex() = default;
     explicit PostfixRegex(const PreprocessedRegex& source);
     const std::string& GetValue(void) const;
+    std::string Test(void);
 
 private:
     PostfixRegex() = delete;

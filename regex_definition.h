@@ -12,13 +12,18 @@ protected:
 
 protected:
     enum { kContentTypes = 129 };
-    static const unit_type kLeftBracket_;
-    static const unit_type kRightBracket_;
+
+protected:
+    static const unit_type kLeftRoundBracket_;
+    static const unit_type kRightRoundBracket_;
     static const unit_type kClosureOperator_;
     static const unit_type kOrOperator_;
     static const unit_type kJoinOperator_;
     static const unit_type kStartSymbol_;
     static const unit_type kStopSymbol_;
+
+protected:
+    // static const unit_type kLeft
 
 protected:
     static const unit_type kEpsilon; // null character

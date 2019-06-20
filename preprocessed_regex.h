@@ -1,7 +1,9 @@
 #ifndef PREPROCESSED_REGEX_H
 #define PREPROCESSED_REGEX_H
 
+#include <fstream>
 #include <list>
+#include <set>
 #include <string>
 
 #include "regex_definition.h"
@@ -10,11 +12,22 @@ namespace sangyu {
 
 class PreprocessedRegex : public RegexDefinition {
 private:
+    std::fstream log_;
     std::list<unit_type> buffer_;
-    std::string prefix_regex_;
+    std::string preprocessed_regex_;
 
 private:
-    static std::string ToPrefixExpression(std::list<unit_type>& buffer);
+    static const std::set<unit_type> kAbbreviatedCharacters_;
+    static const std::set<unit_type> kEscapeCharacters_;
+    static const std::set<unit_type> kSpecialCharacters_;
+    static const std::list<unit_type> kDigits_;
+    static const std::list<unit_type> kLetters_;
+    static const std::list<unit_type> kCivilians_;
+
+private:
+    static bool CheckSyntax(std::list<unit_type>& buffer);
+    static void ProcessExtensionSyntax(std::list<unit_type>& buffer);
+    static std::string ToPreprocessedExpression(std::list<unit_type>& buffer);
     static void ReplaceOperators(std::list<unit_type>& buffer);
     static void AddJoinOperator(std::list<unit_type>& buffer);
     static void AddStartSymbolAndStopSymbol(std::list<unit_type>& buffer);
@@ -23,6 +36,7 @@ public:
     ~PreprocessedRegex() = default;
     PreprocessedRegex(const std::string& source);
     const std::string& GetValue(void) const;
+    std::string Test(void);
 
 private:
     PreprocessedRegex() = delete;
