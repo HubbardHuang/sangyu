@@ -97,7 +97,7 @@ DFA::AddIntoGraph(const NfaStateSet& start, const Symbol& symbol,
     if (num_of_.find(end) == num_of_.end()) {
         AssginStateNumber(end);
     }
-    dfa_[num_of_[start]][symbol].insert(num_of_[end]);
+    dfa_[num_of_[start]][symbol] = num_of_[end];
 }
 
 void
@@ -118,11 +118,66 @@ DFA::Test(void) {
     std::cout << "DFA:" << std::endl;
     for (auto v1_e_v2 : dfa_) {
         for (auto e_v2 : v1_e_v2.second) {
-            for (auto target : e_v2.second) {
-                std::cout << "{ " << v1_e_v2.first << " " << e_v2.first << " "
-                          << target << " }" << std::endl;
+            std::cout << "{ " << v1_e_v2.first << " ";
+            std::string sbl = "";
+            if (isprint(e_v2.first)) {
+                sbl += e_v2.first;
+            } else {
+                switch (e_v2.first) {
+                case '\n':
+                    sbl += "\\n";
+                    break;
+                case '\t':
+                    sbl += "\\t";
+                    break;
+                case '\v':
+                    sbl += "\\v";
+                    break;
+                case '\f':
+                    sbl += "\\f";
+                    break;
+                case '\a':
+                    sbl += "\\a";
+                    break;
+                case '\b':
+                    sbl += "\\b";
+                    break;
+                default:
+                    sbl += std::string("Ascii(") +
+                           std::to_string(static_cast<int>(e_v2.first)) + ")";
+                    break;
+                }
             }
+            std::cout << sbl;
+            std::cout << " " << e_v2.second << " }" << std::endl;
         }
+    }
+
+    std::cout << "start state: " << start_state_ << '\n';
+    std::cout << "end state:";
+    for (auto e : end_state_) {
+        std::cout << ' ' << e;
+    }
+    std::cout << std::endl;
+}
+
+bool
+DFA::Judge(const std::string& str) {
+    auto curr_state = start_state_;
+    auto ch = str.begin();
+    for (; ch != str.end(); ch++) {
+        if (dfa_[curr_state].find(*ch) == dfa_[curr_state].end()) {
+            break;
+        } else {
+            curr_state = dfa_[curr_state][*ch];
+        }
+    }
+    if (end_state_.find(curr_state) == end_state_.end()) {
+        return false;
+    } else if (std::distance(str.begin(), ch) != str.size()) {
+        return false;
+    } else {
+        return true;
     }
 }
 

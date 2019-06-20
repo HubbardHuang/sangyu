@@ -23,6 +23,7 @@ private:
     static const std::list<unit_type> kDigits_;
     static const std::list<unit_type> kLetters_;
     static const std::list<unit_type> kCivilians_;
+    static const std::list<unit_type> kSpaces_;
 
 private:
     static bool CheckSyntax(std::list<unit_type>& buffer);

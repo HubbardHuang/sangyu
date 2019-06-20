@@ -16,7 +16,9 @@ protected:
     using DfaState = int;
     using NfaStateSet = std::set<NfaState>;
     using NfaGraph = std::vector<std::map<Symbol, std::set<NfaState>>>;
-    using DfaGraph = std::map<DfaState, std::map<Symbol, std::set<DfaState>>>;
+    // using DfaGraph = std::map<DfaState, std::map<Symbol,
+    // std::set<DfaState>>>;
+    using DfaGraph = std::map<DfaState, std::map<Symbol, DfaState>>;
 
 protected:
     std::set<Symbol> symbols_;

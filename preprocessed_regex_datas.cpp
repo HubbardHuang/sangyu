@@ -285,4 +285,14 @@ const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kCivilians_ = {
     PreprocessedRegex::kRightRoundBracket_
 };
 
+const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kSpaces_ = {
+    PreprocessedRegex::kLeftRoundBracket_, '\n',
+    PreprocessedRegex::kOrOperator_,       '\t',
+    PreprocessedRegex::kOrOperator_,       '\r',
+    PreprocessedRegex::kOrOperator_,       '\v',
+    PreprocessedRegex::kOrOperator_,       '\f',
+    PreprocessedRegex::kOrOperator_,       ' ',
+    PreprocessedRegex::kRightRoundBracket_
+};
+
 } // namespace sangyu

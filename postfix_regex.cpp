@@ -33,7 +33,7 @@ PostfixRegex::ToPostfixExpression(const std::string& source) {
                         result.push_back(operator_stack.top());
                         operator_stack.pop();
                     }
-                    if (!operator_stack.empty()) {
+                    if (!operator_stack.empty()) { // Pop '(' at the stack top
                         operator_stack.pop();
                     }
                 } else {

@@ -29,6 +29,7 @@ public:
 
 public:
     void Test(void);
+    bool Judge(const std::string& str);
 
 private:
     DFA() = delete;

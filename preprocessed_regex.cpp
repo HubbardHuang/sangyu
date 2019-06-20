@@ -8,7 +8,7 @@
 namespace sangyu {
 
 const std::set<PreprocessedRegex::unit_type>
-  PreprocessedRegex::kAbbreviatedCharacters_ = { 'd', 'w', 'p' };
+  PreprocessedRegex::kAbbreviatedCharacters_ = { 'd', 'w', 'p', 's' };
 const std::set<PreprocessedRegex::unit_type>
   PreprocessedRegex::kEscapeCharacters_ = { '\\', '\'', '\"', 'b', 'a',
                                             'n',  'r',  'f',  't', 'v' };
@@ -91,6 +91,13 @@ PreprocessedRegex::CheckSyntax(std::list<unit_type>& buffer) {
     for (auto curr = buffer.begin(); curr != buffer.end(); curr++) {
         if (*curr == kLeftRoundBracket_) {
             symbol_stack.push(*curr);
+            auto next = curr;
+            next++;
+            if (next != buffer.end() && *next == kRightRoundBracket_) {
+                curr = buffer.erase(curr);
+                curr = buffer.erase(curr);
+                --curr;
+            }
         } else if (*curr == kRightRoundBracket_) {
             if (!symbol_stack.empty()) {
                 symbol_stack.pop();
@@ -121,6 +128,9 @@ PreprocessedRegex::ProcessExtensionSyntax(std::list<unit_type>& buffer) {
                 break;
             case 'p':
                 buffer.insert(left, kCivilians_.begin(), kCivilians_.end());
+                break;
+            case 's':
+                buffer.insert(left, kSpaces_.begin(), kSpaces_.end());
                 break;
             default:
                 // Error
@@ -182,10 +192,12 @@ PreprocessedRegex::AddJoinOperator(std::list<unit_type>& buffer) {
     auto next = buffer.begin();
     next++;
     for (; next != buffer.end(); curr++, next++) {
-        if (isprint(*curr) && isprint(*next) /* ab */ ||
-            *curr == kClosureOperator_ && isprint(*next) /* a*b */ ||
-            *curr == kRightRoundBracket_ && isprint(*next) /* (a)b */ ||
-            isprint(*curr) && *next == kLeftRoundBracket_ /*a(b)*/ ||
+        if (isascii(*curr) && isascii(*next) /* ab */ ||
+            *curr == kClosureOperator_ && isascii(*next) /* a*b */ ||
+            *curr == kClosureOperator_ &&
+              *next == kLeftRoundBracket_ /* a*(b) */
+            || *curr == kRightRoundBracket_ && isascii(*next) /* (a)b */ ||
+            isascii(*curr) && *next == kLeftRoundBracket_ /* a(b) */ ||
             *curr == kRightRoundBracket_ &&
               *next == kLeftRoundBracket_ /* (a)(b) */) {
             next = buffer.insert(next, kJoinOperator_);
