@@ -14,6 +14,7 @@ NFA::NFA(const PostfixRegex& source)
     std::stack<StatePair> state_pair_stack;
     std::string postfix_regex = source.GetValue();
     unit_type prev_operator = 0;
+    int build_count = 0;
     for (auto ch : postfix_regex) {
         if (IsValidOperator(ch)) {
             if (state_pair_stack.empty()) {
@@ -38,7 +39,7 @@ NFA::NFA(const PostfixRegex& source)
                 // state_pair_stack.push(StatePair(sp1.first, sp2.second));
                 state_pair_stack.push(StatePair(sp2.first, sp1.second));
             } else if (ch == kOrOperator_) {
-                if (prev_operator != kOrOperator_) {
+                if (prev_operator != kOrOperator_ || build_count != 1) {
                     StatePair sp1, sp2;
                     sp1 = state_pair_stack.top();
                     state_pair_stack.pop();
@@ -86,6 +87,7 @@ NFA::NFA(const PostfixRegex& source)
                 state_pair_stack.push(new_sp);
             }
             prev_operator = ch;
+            build_count = 0;
         } else {
             StatePair sp;
             sp.first = AssignVertex();
@@ -101,6 +103,7 @@ NFA::NFA(const PostfixRegex& source)
             end_state_ = sp.second;
 
             state_pair_stack.push(sp);
+            build_count++;
         }
     }
 

@@ -7,14 +7,6 @@
 
 namespace sangyu {
 
-const std::set<PreprocessedRegex::unit_type>
-  PreprocessedRegex::kAbbreviatedCharacters_ = { 'd', 'w', 'p', 's' };
-const std::set<PreprocessedRegex::unit_type>
-  PreprocessedRegex::kEscapeCharacters_ = { '\\', '\'', '\"', 'b', 'a',
-                                            'n',  'r',  'f',  't', 'v' };
-const std::set<PreprocessedRegex::unit_type>
-  PreprocessedRegex::kSpecialCharacters_ = { '(', ')', '*', '|' };
-
 PreprocessedRegex::PreprocessedRegex(const std::string& source)
   : buffer_(source.begin(), source.end())
   , preprocessed_regex_(ToPreprocessedExpression(buffer_)) {}
@@ -128,14 +120,18 @@ PreprocessedRegex::ProcessExtensionSyntax(std::list<unit_type>& buffer) {
             case 'd':
                 buffer.insert(left, kDigits_.begin(), kDigits_.end());
                 break;
-            case 'w':
+            case 'l':
                 buffer.insert(left, kLetters_.begin(), kLetters_.end());
                 break;
-            case 'p':
-                buffer.insert(left, kCivilians_.begin(), kCivilians_.end());
+            case 'u':
+                buffer.insert(left, kStringLiteralUnits_.begin(),
+                              kStringLiteralUnits_.end());
                 break;
             case 's':
                 buffer.insert(left, kSpaces_.begin(), kSpaces_.end());
+                break;
+            case 'p':
+                buffer.insert(left, kPunctuation_.begin(), kPunctuation_.end());
                 break;
             default:
                 // Error

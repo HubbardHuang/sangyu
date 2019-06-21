@@ -22,8 +22,9 @@ private:
     static const std::set<unit_type> kSpecialCharacters_;
     static const std::list<unit_type> kDigits_;
     static const std::list<unit_type> kLetters_;
-    static const std::list<unit_type> kCivilians_;
+    static const std::list<unit_type> kStringLiteralUnits_;
     static const std::list<unit_type> kSpaces_;
+    static const std::list<unit_type> kPunctuation_;
 
 private:
     static bool CheckSyntax(std::list<unit_type>& buffer);

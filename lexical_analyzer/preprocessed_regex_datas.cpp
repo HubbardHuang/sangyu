@@ -2,6 +2,14 @@
 
 namespace sangyu {
 
+const std::set<PreprocessedRegex::unit_type>
+  PreprocessedRegex::kAbbreviatedCharacters_ = { 'd', 'l', 'u', 's', 'p' };
+const std::set<PreprocessedRegex::unit_type>
+  PreprocessedRegex::kEscapeCharacters_ = { '\\', '\'', '\"', 'b', 'a',
+                                            'n',  'r',  'f',  't', 'v' };
+const std::set<PreprocessedRegex::unit_type>
+  PreprocessedRegex::kSpecialCharacters_ = { '(', ')', '*', '|' };
+
 const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kDigits_ = {
     PreprocessedRegex::kLeftRoundBracket_, '0',
     PreprocessedRegex::kOrOperator_,       '1',
@@ -15,6 +23,7 @@ const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kDigits_ = {
     PreprocessedRegex::kOrOperator_,       '9',
     PreprocessedRegex::kRightRoundBracket_
 };
+
 const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kLetters_ = {
     PreprocessedRegex::kLeftRoundBracket_, 'a',
     PreprocessedRegex::kOrOperator_,       'b',
@@ -70,66 +79,76 @@ const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kLetters_ = {
     PreprocessedRegex::kOrOperator_,       'Z',
     PreprocessedRegex::kRightRoundBracket_
 };
-const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kCivilians_ = {
-    PreprocessedRegex::kLeftRoundBracket_, 32, PreprocessedRegex::kOrOperator_,
-    33, PreprocessedRegex::kOrOperator_, 34, PreprocessedRegex::kOrOperator_,
-    35, PreprocessedRegex::kOrOperator_, 36, PreprocessedRegex::kOrOperator_,
-    37, PreprocessedRegex::kOrOperator_, 38, PreprocessedRegex::kOrOperator_,
-    39, PreprocessedRegex::kOrOperator_, 40, PreprocessedRegex::kOrOperator_,
-    41, PreprocessedRegex::kOrOperator_, 42, PreprocessedRegex::kOrOperator_,
-    43, PreprocessedRegex::kOrOperator_, 44, PreprocessedRegex::kOrOperator_,
-    45, PreprocessedRegex::kOrOperator_, 46, PreprocessedRegex::kOrOperator_,
-    47, PreprocessedRegex::kOrOperator_, 48, PreprocessedRegex::kOrOperator_,
-    49, PreprocessedRegex::kOrOperator_, 50, PreprocessedRegex::kOrOperator_,
-    51, PreprocessedRegex::kOrOperator_, 52, PreprocessedRegex::kOrOperator_,
-    53, PreprocessedRegex::kOrOperator_, 54, PreprocessedRegex::kOrOperator_,
-    55, PreprocessedRegex::kOrOperator_, 56, PreprocessedRegex::kOrOperator_,
-    57, PreprocessedRegex::kOrOperator_, 58, PreprocessedRegex::kOrOperator_,
-    59, PreprocessedRegex::kOrOperator_, 60, PreprocessedRegex::kOrOperator_,
-    61, PreprocessedRegex::kOrOperator_, 62, PreprocessedRegex::kOrOperator_,
-    63, PreprocessedRegex::kOrOperator_, 64, PreprocessedRegex::kOrOperator_,
-    65, PreprocessedRegex::kOrOperator_, 66, PreprocessedRegex::kOrOperator_,
-    67, PreprocessedRegex::kOrOperator_, 68, PreprocessedRegex::kOrOperator_,
-    69, PreprocessedRegex::kOrOperator_, 70, PreprocessedRegex::kOrOperator_,
-    71, PreprocessedRegex::kOrOperator_, 72, PreprocessedRegex::kOrOperator_,
-    73, PreprocessedRegex::kOrOperator_, 74, PreprocessedRegex::kOrOperator_,
-    75, PreprocessedRegex::kOrOperator_, 76, PreprocessedRegex::kOrOperator_,
-    77, PreprocessedRegex::kOrOperator_, 78, PreprocessedRegex::kOrOperator_,
-    79, PreprocessedRegex::kOrOperator_, 80, PreprocessedRegex::kOrOperator_,
-    81, PreprocessedRegex::kOrOperator_, 82, PreprocessedRegex::kOrOperator_,
-    83, PreprocessedRegex::kOrOperator_, 84, PreprocessedRegex::kOrOperator_,
-    85, PreprocessedRegex::kOrOperator_, 86, PreprocessedRegex::kOrOperator_,
-    87, PreprocessedRegex::kOrOperator_, 88, PreprocessedRegex::kOrOperator_,
-    89, PreprocessedRegex::kOrOperator_, 90, PreprocessedRegex::kOrOperator_,
-    91,
-    // PreprocessedRegex::kOrOperator_, // '\\', not '\'
-    // 92,
-    PreprocessedRegex::kOrOperator_, 93, PreprocessedRegex::kOrOperator_, 94,
-    PreprocessedRegex::kOrOperator_, 95, PreprocessedRegex::kOrOperator_, 96,
-    PreprocessedRegex::kOrOperator_, 97, PreprocessedRegex::kOrOperator_, 98,
-    PreprocessedRegex::kOrOperator_, 99, PreprocessedRegex::kOrOperator_, 100,
-    PreprocessedRegex::kOrOperator_, 101, PreprocessedRegex::kOrOperator_, 102,
-    PreprocessedRegex::kOrOperator_, 103, PreprocessedRegex::kOrOperator_, 104,
-    PreprocessedRegex::kOrOperator_, 105, PreprocessedRegex::kOrOperator_, 106,
-    PreprocessedRegex::kOrOperator_, 107, PreprocessedRegex::kOrOperator_, 108,
-    PreprocessedRegex::kOrOperator_, 109, PreprocessedRegex::kOrOperator_, 110,
-    PreprocessedRegex::kOrOperator_, 111, PreprocessedRegex::kOrOperator_, 112,
-    PreprocessedRegex::kOrOperator_, 113, PreprocessedRegex::kOrOperator_, 114,
-    PreprocessedRegex::kOrOperator_, 115, PreprocessedRegex::kOrOperator_, 116,
-    PreprocessedRegex::kOrOperator_, 117, PreprocessedRegex::kOrOperator_, 118,
-    PreprocessedRegex::kOrOperator_, 119, PreprocessedRegex::kOrOperator_, 120,
-    PreprocessedRegex::kOrOperator_, 121, PreprocessedRegex::kOrOperator_, 122,
-    PreprocessedRegex::kOrOperator_, 123, PreprocessedRegex::kOrOperator_, 124,
-    PreprocessedRegex::kOrOperator_, 125, PreprocessedRegex::kOrOperator_, 126,
-    PreprocessedRegex::kOrOperator_, '\\', 'n', PreprocessedRegex::kOrOperator_,
-    '\\', 't', PreprocessedRegex::kOrOperator_, '\\', 'f',
-    PreprocessedRegex::kOrOperator_, '\\', 'v', PreprocessedRegex::kOrOperator_,
-    '\\', 'r', PreprocessedRegex::kOrOperator_, '\\', 'a',
-    PreprocessedRegex::kOrOperator_, '\\', 'b', PreprocessedRegex::kOrOperator_,
-    '\\', '\'', PreprocessedRegex::kOrOperator_, '\\', '\"',
-    PreprocessedRegex::kOrOperator_, '\\', '\\',
-    PreprocessedRegex::kRightRoundBracket_
-};
+
+const std::list<PreprocessedRegex::unit_type>
+  PreprocessedRegex::kStringLiteralUnits_ = {
+      PreprocessedRegex::kLeftRoundBracket_, 32,
+      PreprocessedRegex::kOrOperator_, 33, PreprocessedRegex::kOrOperator_, 34,
+      PreprocessedRegex::kOrOperator_, 35, PreprocessedRegex::kOrOperator_, 36,
+      PreprocessedRegex::kOrOperator_, 37, PreprocessedRegex::kOrOperator_, 38,
+      PreprocessedRegex::kOrOperator_, 39, PreprocessedRegex::kOrOperator_, 40,
+      PreprocessedRegex::kOrOperator_, 41, PreprocessedRegex::kOrOperator_, 42,
+      PreprocessedRegex::kOrOperator_, 43, PreprocessedRegex::kOrOperator_, 44,
+      PreprocessedRegex::kOrOperator_, 45, PreprocessedRegex::kOrOperator_, 46,
+      PreprocessedRegex::kOrOperator_, 47, PreprocessedRegex::kOrOperator_, 48,
+      PreprocessedRegex::kOrOperator_, 49, PreprocessedRegex::kOrOperator_, 50,
+      PreprocessedRegex::kOrOperator_, 51, PreprocessedRegex::kOrOperator_, 52,
+      PreprocessedRegex::kOrOperator_, 53, PreprocessedRegex::kOrOperator_, 54,
+      PreprocessedRegex::kOrOperator_, 55, PreprocessedRegex::kOrOperator_, 56,
+      PreprocessedRegex::kOrOperator_, 57, PreprocessedRegex::kOrOperator_, 58,
+      PreprocessedRegex::kOrOperator_, 59, PreprocessedRegex::kOrOperator_, 60,
+      PreprocessedRegex::kOrOperator_, 61, PreprocessedRegex::kOrOperator_, 62,
+      PreprocessedRegex::kOrOperator_, 63, PreprocessedRegex::kOrOperator_, 64,
+      PreprocessedRegex::kOrOperator_, 65, PreprocessedRegex::kOrOperator_, 66,
+      PreprocessedRegex::kOrOperator_, 67, PreprocessedRegex::kOrOperator_, 68,
+      PreprocessedRegex::kOrOperator_, 69, PreprocessedRegex::kOrOperator_, 70,
+      PreprocessedRegex::kOrOperator_, 71, PreprocessedRegex::kOrOperator_, 72,
+      PreprocessedRegex::kOrOperator_, 73, PreprocessedRegex::kOrOperator_, 74,
+      PreprocessedRegex::kOrOperator_, 75, PreprocessedRegex::kOrOperator_, 76,
+      PreprocessedRegex::kOrOperator_, 77, PreprocessedRegex::kOrOperator_, 78,
+      PreprocessedRegex::kOrOperator_, 79, PreprocessedRegex::kOrOperator_, 80,
+      PreprocessedRegex::kOrOperator_, 81, PreprocessedRegex::kOrOperator_, 82,
+      PreprocessedRegex::kOrOperator_, 83, PreprocessedRegex::kOrOperator_, 84,
+      PreprocessedRegex::kOrOperator_, 85, PreprocessedRegex::kOrOperator_, 86,
+      PreprocessedRegex::kOrOperator_, 87, PreprocessedRegex::kOrOperator_, 88,
+      PreprocessedRegex::kOrOperator_, 89, PreprocessedRegex::kOrOperator_, 90,
+      PreprocessedRegex::kOrOperator_, 91,
+      // PreprocessedRegex::kOrOperator_, 92, // '\\', not '\'
+      PreprocessedRegex::kOrOperator_, 93, PreprocessedRegex::kOrOperator_, 94,
+      PreprocessedRegex::kOrOperator_, 95, PreprocessedRegex::kOrOperator_, 96,
+      PreprocessedRegex::kOrOperator_, 97, PreprocessedRegex::kOrOperator_, 98,
+      PreprocessedRegex::kOrOperator_, 99, PreprocessedRegex::kOrOperator_, 100,
+      PreprocessedRegex::kOrOperator_, 101, PreprocessedRegex::kOrOperator_,
+      102, PreprocessedRegex::kOrOperator_, 103,
+      PreprocessedRegex::kOrOperator_, 104, PreprocessedRegex::kOrOperator_,
+      105, PreprocessedRegex::kOrOperator_, 106,
+      PreprocessedRegex::kOrOperator_, 107, PreprocessedRegex::kOrOperator_,
+      108, PreprocessedRegex::kOrOperator_, 109,
+      PreprocessedRegex::kOrOperator_, 110, PreprocessedRegex::kOrOperator_,
+      111, PreprocessedRegex::kOrOperator_, 112,
+      PreprocessedRegex::kOrOperator_, 113, PreprocessedRegex::kOrOperator_,
+      114, PreprocessedRegex::kOrOperator_, 115,
+      PreprocessedRegex::kOrOperator_, 116, PreprocessedRegex::kOrOperator_,
+      117, PreprocessedRegex::kOrOperator_, 118,
+      PreprocessedRegex::kOrOperator_, 119, PreprocessedRegex::kOrOperator_,
+      120, PreprocessedRegex::kOrOperator_, 121,
+      PreprocessedRegex::kOrOperator_, 122, PreprocessedRegex::kOrOperator_,
+      123, PreprocessedRegex::kOrOperator_, 124,
+      PreprocessedRegex::kOrOperator_, 125, PreprocessedRegex::kOrOperator_,
+      126,
+
+      PreprocessedRegex::kOrOperator_, '\\', 'n',
+      PreprocessedRegex::kOrOperator_, '\\', 't',
+      PreprocessedRegex::kOrOperator_, '\\', 'f',
+      PreprocessedRegex::kOrOperator_, '\\', 'v',
+      PreprocessedRegex::kOrOperator_, '\\', 'r',
+      PreprocessedRegex::kOrOperator_, '\\', 'a',
+      PreprocessedRegex::kOrOperator_, '\\', 'b',
+      PreprocessedRegex::kOrOperator_, '\\', '\'',
+      PreprocessedRegex::kOrOperator_, '\\', '\"',
+      PreprocessedRegex::kOrOperator_, '\\', '\\',
+      PreprocessedRegex::kRightRoundBracket_
+  };
 
 const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kSpaces_ = {
     PreprocessedRegex::kLeftRoundBracket_, '\n',
@@ -140,5 +159,40 @@ const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kSpaces_ = {
     PreprocessedRegex::kOrOperator_,       ' ',
     PreprocessedRegex::kRightRoundBracket_
 };
+
+const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kPunctuation_ =
+  { PreprocessedRegex::kLeftRoundBracket_, '!',
+    PreprocessedRegex::kOrOperator_,       '\"',
+    PreprocessedRegex::kOrOperator_,       '#',
+    PreprocessedRegex::kOrOperator_,       '$',
+    PreprocessedRegex::kOrOperator_,       '%',
+    PreprocessedRegex::kOrOperator_,       '&',
+    PreprocessedRegex::kOrOperator_,       '\'',
+    PreprocessedRegex::kOrOperator_,       '(',
+    PreprocessedRegex::kOrOperator_,       ')',
+    PreprocessedRegex::kOrOperator_,       '*',
+    PreprocessedRegex::kOrOperator_,       '+',
+    PreprocessedRegex::kOrOperator_,       ',',
+    PreprocessedRegex::kOrOperator_,       '-',
+    PreprocessedRegex::kOrOperator_,       '.',
+    PreprocessedRegex::kOrOperator_,       '/',
+    PreprocessedRegex::kOrOperator_,       ':',
+    PreprocessedRegex::kOrOperator_,       ';',
+    PreprocessedRegex::kOrOperator_,       '<',
+    PreprocessedRegex::kOrOperator_,       '=',
+    PreprocessedRegex::kOrOperator_,       '>',
+    PreprocessedRegex::kOrOperator_,       '?',
+    PreprocessedRegex::kOrOperator_,       '@',
+    PreprocessedRegex::kOrOperator_,       '[',
+    PreprocessedRegex::kOrOperator_,       '\\',
+    PreprocessedRegex::kOrOperator_,       ']',
+    PreprocessedRegex::kOrOperator_,       '^',
+    PreprocessedRegex::kOrOperator_,       '_',
+    PreprocessedRegex::kOrOperator_,       '`',
+    PreprocessedRegex::kOrOperator_,       '{',
+    PreprocessedRegex::kOrOperator_,       '|',
+    PreprocessedRegex::kOrOperator_,       '}',
+    PreprocessedRegex::kOrOperator_,       '~',
+    PreprocessedRegex::kRightRoundBracket_ };
 
 } // namespace sangyu
