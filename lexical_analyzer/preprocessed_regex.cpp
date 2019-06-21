@@ -51,7 +51,12 @@ PreprocessedRegex::CheckSyntax(std::list<unit_type>& buffer) {
                 std::cout << "Error: \'\\\' at the end." << std::endl;
                 return false;
             }
-            if (kSpecialCharacters_.find(*right) != kSpecialCharacters_.end()) {
+            if (*right == '\\') {
+                right++;
+                left++;
+                // left = buffer.erase(left);
+            } else if (kSpecialCharacters_.find(*right) !=
+                       kSpecialCharacters_.end()) {
                 left = buffer.erase(left);
                 right++;
             } else if (kEscapeCharacters_.find(*right) ==
@@ -118,7 +123,7 @@ PreprocessedRegex::ProcessExtensionSyntax(std::list<unit_type>& buffer) {
     auto right = buffer.begin();
     right++;
     while (left != buffer.end() && right != buffer.end()) {
-        if (*left == '\\') {
+        if (*left == '\\' && *right != '\\') {
             switch (*right) {
             case 'd':
                 buffer.insert(left, kDigits_.begin(), kDigits_.end());
@@ -139,7 +144,6 @@ PreprocessedRegex::ProcessExtensionSyntax(std::list<unit_type>& buffer) {
                               << "\' at the back of \'" << *left << "\'. ["
                               << std::distance(buffer.begin(), right) << "]"
                               << std::endl;
-
                 break;
             }
             left = buffer.erase(left);
@@ -147,6 +151,9 @@ PreprocessedRegex::ProcessExtensionSyntax(std::list<unit_type>& buffer) {
             if (right != buffer.end()) {
                 ++right;
             }
+        } else if (*left == '\\' && *right == '\\') {
+            left = buffer.erase(left);
+            right++;
         }
         if (right != buffer.end()) {
             ++left;

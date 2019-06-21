@@ -5,7 +5,7 @@ CPP_OBJECTS = $(patsubst %.cpp, %.o, $(CPP_SOURCES))
 CC = g++
 
 # 指定搜索路径
-INCLUDE_PATH = -I .
+INCLUDE_PATH = -I . -I lexical_analyzer
 
 # 指定编译参数
 CPP_FLAGS = $(INCLUDE_PATH)
@@ -33,5 +33,5 @@ run:
 
 .PHONY:remove
 remove:
-	@rm -R -f *.o *.gch
+	@rm -r -f $(CPP_OBJECTS)
 	@echo All redundant files has been deleted.

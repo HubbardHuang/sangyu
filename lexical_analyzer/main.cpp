@@ -9,12 +9,12 @@
 int
 main(int argc, char** argv) {
     // std::string regex = "d(a|c)*";
-    std::string regex = "1()a\\d*\\p*";
+    std::string regex = "(\\\\)r";
     sangyu::PreprocessedRegex preprocessed(regex);
     std::string result = preprocessed.Test();
     // std::cout << result.size() << " " << result << std::endl;
     sangyu::PostfixRegex postfix(preprocessed);
-    std::string postfix_value = postfix.Test();
+    // std::string postfix_value = postfix.Test();
     // std::cout << postfix_value.size() << " " << postfix_value << std::endl;
 
     sangyu::NFA nfa(postfix);
@@ -55,8 +55,10 @@ main(int argc, char** argv) {
     // std::cout << "--------------------------" << std::endl;
 
     sangyu::DFA dfa(nfa);
-    // dfa.Test();
-    if (dfa.Judge("1a123\\n\\f")) {
+    // // dfa.Test();
+    std::string input;
+    std::cin >> input;
+    if (dfa.Judge(input)) {
         std::cout << "Yes." << std::endl;
     } else {
         std::cout << "No." << std::endl;

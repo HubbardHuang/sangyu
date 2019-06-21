@@ -23,9 +23,6 @@ protected:
     static const unit_type kStopSymbol_;
 
 protected:
-    // static const unit_type kLeft
-
-protected:
     static const unit_type kEpsilon; // null character
 
 protected:
