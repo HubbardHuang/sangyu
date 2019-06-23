@@ -2,6 +2,7 @@
 #define NFA_H
 
 #include <bitset>
+#include <iostream>
 #include <map>
 #include <set>
 #include <vector>
@@ -38,13 +39,13 @@ public:
     std::set<State> FindClosure(const State& start, const Symbol& sbl);
 
 public:
-    std::vector<std::vector<int>> Print(void);
     const State& GetStartVertex(void) const;
     const State& GetVertexMax(void) const;
     const State& GetEndVertex(void) const;
     const Graph& GetGraph(void) const;
     const std::set<Symbol>& GetLables(void) const;
     const std::vector<std::set<State>>& GetEpsilonClosure(void) const;
+    void Test(std::ostream& os = std::cout);
 
 private:
     NFA() = delete;

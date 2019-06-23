@@ -1,6 +1,7 @@
 #ifndef POSTFIX_REGEX_H
 #define POSTFIX_REGEX_H
 
+#include <iostream>
 #include <map>
 #include <string>
 
@@ -21,7 +22,7 @@ public:
     ~PostfixRegex() = default;
     explicit PostfixRegex(const PreprocessedRegex& source);
     const std::string& GetValue(void) const;
-    std::string Test(void);
+    void Test(std::ostream& os = std::cout);
 
 private:
     PostfixRegex() = delete;

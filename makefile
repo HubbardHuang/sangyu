@@ -5,7 +5,7 @@ CPP_OBJECTS = $(patsubst %.cpp, %.o, $(CPP_SOURCES))
 CC = g++
 
 # 指定搜索路径
-INCLUDE_PATH = -I . -I lexical_analyzer
+INCLUDE_PATH = -I . -I lexical_analyzer -I test
 
 # 指定编译参数
 CPP_FLAGS = $(INCLUDE_PATH)

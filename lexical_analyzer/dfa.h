@@ -1,6 +1,7 @@
 #ifndef DFA_H
 #define DFA_H
 
+#include <fstream>
 #include <map>
 
 #include "finite_automata.h"
@@ -16,6 +17,7 @@ private:
     std::map<NfaStateSet, DfaState> num_of_;
     DfaState start_state_;
     std::set<DfaState> end_state_;
+    bool look_forward_;
 
 private:
     bool IsNonEmptySubset(NfaStateSet left, NfaStateSet right);
@@ -25,10 +27,12 @@ private:
 
 public:
     explicit DFA(const NFA& source);
+    explicit DFA(const std::string& regex, bool look_forward);
     ~DFA() = default;
 
 public:
-    void Test(void);
+    void Test(std::ostream& os = std::cout);
+    std::string Judge(std::fstream& file);
     bool Judge(const std::string& str);
 
 private:

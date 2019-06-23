@@ -1,12 +1,9 @@
-#include <stdio.h>
-
-/**
- * Comment 1
- */
+#include <cstdio>
 
 int
 main(void) {
-    int a = 1; // Comment 2
+    int a[100]={0};
+    int a = 1; // comment 1
     char c = '\n';
     const char* s = "Can you say \"Hello World\"?";
     printf("a = %d, c = \'%c\', s = \"%s\"\n", a, c, s);

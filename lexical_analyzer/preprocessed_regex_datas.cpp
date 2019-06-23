@@ -83,7 +83,8 @@ const std::list<PreprocessedRegex::unit_type> PreprocessedRegex::kLetters_ = {
 const std::list<PreprocessedRegex::unit_type>
   PreprocessedRegex::kStringLiteralUnits_ = {
       PreprocessedRegex::kLeftRoundBracket_, 32,
-      PreprocessedRegex::kOrOperator_, 33, PreprocessedRegex::kOrOperator_, 34,
+      PreprocessedRegex::kOrOperator_,
+      33, // PreprocessedRegex::kOrOperator_, 34,
       PreprocessedRegex::kOrOperator_, 35, PreprocessedRegex::kOrOperator_, 36,
       PreprocessedRegex::kOrOperator_, 37, PreprocessedRegex::kOrOperator_, 38,
       PreprocessedRegex::kOrOperator_, 39, PreprocessedRegex::kOrOperator_, 40,

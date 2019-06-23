@@ -6,63 +6,131 @@
 #include "postfix_regex.h"
 #include "preprocessed_regex.h"
 
+#include "test_regex_to_dfa.h"
+
 int
-main(int argc, char** argv) {
-    // std::string regex = "//(\\l|\\d|\\p|\\s)*";
-    std::string regex = "(int|unsigned)(\\s|\\p)";
-    sangyu::PreprocessedRegex preprocessed(regex);
-    std::string result = preprocessed.Test();
-    // std::cout << result.size() << " " << result << std::endl;
-    sangyu::PostfixRegex postfix(preprocessed);
-    std::string postfix_value = postfix.Test();
-    std::cout << postfix_value.size() << " " << postfix_value << std::endl;
+main(void) {
+    // std::string re_space = "\\s*(\\p|\\d\\l)";
+    std::string re_space = "\\s*";
+    std::string re_look_forward = "(\\p|\\s)";
+    // std::string re_id = "(_|\\l)(_|\\l|\\d)*" + re_look_forward;
+    std::string re_id = "(_|\\l)(_|\\l|\\d)*";
+    std::string re_keyword =
+      "(int|char|const|include|void|return)" + re_look_forward;
+    // std::string re_punct = "(=|<|>|;|{|}|\\(|\\)|,)(\\s|\\d|\\l)";
+    std::string re_punct = "(=|<|>|;|{|}|\\(|\\)|,)|\\*|[|]|#";
+    // std::string re_punct = "\\(|\\)|,";
+    // std::string re_comment1 = "(/\\*(\\d|\\l|\\s)*\\*/)";
+    std::string re_comment2 = "(//(\\d|\\l| |\t)*)(\n)";
+    std::string re_constchar = "\'(\\u)\'";
+    std::string re_conststr = "\"(\\u)*\"";
 
-    sangyu::NFA nfa(postfix);
-    // std::vector<std::vector<int>> ves = nfa.Print();
-    // if (ves.empty()) {
-    //     std::cout << "Empty." << std::endl;
-    //     return 0;
-    // }
+    std::string digits = "\\d\\d*";
+    std::string ee = "(E|e)";
+    std::string D1 = digits;
+    std::string D2 = digits + "." + digits;
+    std::string D3 = D1 + ee + digits;
+    std::string D4 = D1 + ee + "+" + digits;
+    std::string D5 = D1 + ee + "-" + digits;
+    std::string D6 = D2 + ee + digits;
+    std::string D7 = D2 + ee + "+" + digits;
+    std::string D8 = D2 + ee + "-" + digits;
+    std::string re_num = std::string("(") + D1 + "|" + D2 + "|" + D3 + "|" +
+                         D4 + "|" + D5 + "|" + D6 + "|" + D7 + "|" + D8 +
+                         std::string(")");
 
-    // std::vector<int> se(ves.back());
-    // ves.pop_back();
-    // std::vector<int> lable(ves.back());
-    // ves.pop_back();
+    sangyu::DFA dfa_space(re_space, false);
+    sangyu::DFA dfa_id(re_id, false);
+    sangyu::DFA dfa_punct(re_punct, false);
+    sangyu::DFA dfa_keyword(re_keyword, true);
 
-    // for (auto v : ves) {
-    //     std::cout << '{' << ' ';
-    //     std::cout << std::to_string(v[0]) << ", ";
-    //     std::cout << static_cast<char>(v[1]) << ", ";
-    //     std::cout << std::to_string(v[2]) << " ";
-    //     std::cout << '}' << std::endl;
-    // }
-    // std::cout << '{' << ' ';
-    // for (auto c : lable) {
-    //     std::cout << static_cast<char>(c) << " ";
-    // }
-    // std::cout << '}' << std::endl;
-    // std::cout << "start_vertex: " << se[0] << " ";
-    // std::cout << "end_vertex: " << se[1] << std::endl;
+    sangyu::DFA dfa_num(re_num, false);
+    // sangyu::DFA dfa_comment1(re_comment1, false);
+    sangyu::DFA dfa_comment2(re_comment2, true);
+    sangyu::DFA dfa_constchar(re_constchar, false);
+    sangyu::DFA dfa_conststr(re_conststr, false);
 
-    // auto sets = nfa.GetEpsilonClosure();
-    // for (int i = 0; i < sets.size(); i++) {
-    //     std::cout << "vertex " << i << ": ";
-    //     for (auto v : sets[i]) {
-    //         std::cout << v << ' ';
-    //     }
-    //     std::cout << std::endl;
-    // }
-    // std::cout << "--------------------------" << std::endl;
+    std::fstream file("/home/hhb/practice/sangyu/code.c.test");
+    while (!file.eof()) {
 
-    sangyu::DFA dfa(nfa);
-    // dfa.Test();
-    std::string input;
-    std::cin >> input;
-    if (dfa.Judge(input)) {
-        std::cout << "Yes." << std::endl;
-    } else {
-        std::cout << "No." << std::endl;
+        // std::cout << "1" << std::endl;
+        // getchar();
+        // std::cout << "curr:[" << (int)file.get() << "]." << std::endl;
+        // file.seekg(-1, std::fstream::cur);
+
+        for (std::string buffer = dfa_space.Judge(file); !buffer.empty();) {
+            std::cout << "space: " << buffer.size() << std::endl;
+            // getchar();
+            break;
+        }
+        if (file.eof()) {
+            break;
+        }
+
+        // std::cout << "2" << std::endl;
+        // getchar();
+        // std::cout << "curr:[" << (char)file.get() << "]." << std::endl;
+        // file.seekg(-1, std::fstream::cur);
+
+        for (std::string buffer = dfa_keyword.Judge(file); !buffer.empty();) {
+            std::cout << "keyword: " << buffer << std::endl;
+            // getchar();
+            break;
+        }
+        // if (file.eof()) {
+        //     break;
+        // }
+
+        for (std::string buffer = dfa_id.Judge(file); !buffer.empty();) {
+            std::cout << "id: " << buffer << std::endl;
+            // getchar();
+            break;
+        }
+        if (file.eof()) {
+            break;
+        }
+
+        // std::cout << "3" << std::endl;
+        // getchar();
+        // std::cout << "curr:[" << (char)file.get() << "]." << std::endl;
+        // file.seekg(-1, std::fstream::cur);
+        for (std::string buffer = dfa_comment2.Judge(file); !buffer.empty();) {
+            std::cout << "com2: [" << buffer << "]" << std::endl;
+            // getchar();
+            break;
+        }
+        // for (std::string buffer = dfa_comment1.Judge(file);
+        // !buffer.empty();)
+        // {
+        //     std::cout << "com1: [" << buffer << "]" << std::endl;
+        //     // getchar();
+        //     break;
+        // }
+        for (std::string buffer = dfa_constchar.Judge(file); !buffer.empty();) {
+            std::cout << "con-char: " << buffer << std::endl;
+            // getchar();
+            break;
+        }
+        for (std::string buffer = dfa_conststr.Judge(file); !buffer.empty();) {
+            std::cout << "con-str: " << buffer << std::endl;
+            // getchar();
+            break;
+        }
+        for (std::string buffer = dfa_punct.Judge(file); !buffer.empty();) {
+            std::cout << "punct: " << buffer << std::endl;
+            // getchar();
+            break;
+        }
+        // if (file.eof()) {
+        //     break;
+        // }
+        for (std::string buffer = dfa_num.Judge(file); !buffer.empty();) {
+            std::cout << "num: " << buffer << std::endl;
+            // getchar();
+            break;
+        }
     }
+    file.close();
 
     return 0;
 }

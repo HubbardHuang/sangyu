@@ -69,6 +69,8 @@ NFA::NFA(const PostfixRegex& source)
                     AddIntoGraph(StatePair(slave.second, master.second),
                                  kEpsilon);
                     state_pair_stack.push(master);
+                    start_state_ = master.first;
+                    end_state_ = master.second;
                 }
             } else if (ch == kClosureOperator_) {
                 StatePair sp = state_pair_stack.top();
@@ -165,35 +167,6 @@ NFA::FindClosure(const State& start, const Symbol& sbl) {
     return closure;
 }
 
-std::vector<std::vector<int>>
-NFA::Print(void) {
-    std::vector<std::vector<int>> result;
-    for (int i = 0; i < nfa_.size(); i++) {
-        for (auto ws : nfa_[i]) {
-            for (auto s : ws.second) {
-                std::vector<int> buffer;
-                buffer.push_back(i);
-                if (ws.first == kEpsilon) {
-                    buffer.push_back('#');
-                } else {
-                    buffer.push_back(ws.first);
-                }
-                buffer.push_back(s);
-                result.push_back(buffer);
-            }
-        }
-    }
-    {
-        std::vector<int> buffer;
-        for (auto ch : symbols_) {
-            buffer.push_back(ch);
-        }
-        result.push_back(buffer);
-    }
-    result.push_back({ start_state_, end_state_ });
-    return result;
-}
-
 const NFA::State&
 NFA::GetStartVertex(void) const {
     return start_state_;
@@ -222,6 +195,54 @@ NFA::GetLables(void) const {
 const std::vector<std::set<NFA::State>>&
 NFA::GetEpsilonClosure(void) const {
     return epsilon_closure_;
+}
+
+void
+NFA::Test(std::ostream& os) {
+    os << "NFA:" << std::endl;
+
+    os << "[state --> symbol --> state] display:" << std::endl;
+    std::vector<std::vector<int>> result;
+    for (int i = 0; i < nfa_.size(); i++) {
+        for (auto ws : nfa_[i]) {
+            for (auto s : ws.second) {
+                std::vector<int> buffer;
+                buffer.push_back(i);
+                if (ws.first == kEpsilon) {
+                    buffer.push_back('#');
+                } else {
+                    buffer.push_back(ws.first);
+                }
+                buffer.push_back(s);
+                result.push_back(buffer);
+            }
+        }
+    }
+    for (auto v : result) {
+        os << '{' << ' ';
+        os << std::to_string(v[0]) << ", ";
+        os << static_cast<char>(v[1]) << ", ";
+        os << std::to_string(v[2]) << " ";
+        os << '}' << std::endl;
+    }
+
+    os << "All Symbols:";
+    for (auto c : symbols_) {
+        os << ' ' << c;
+    }
+
+    os << std::endl;
+    os << "Start State: " << start_state_ << "; End State: " << end_state_
+       << std::endl;
+
+    os << "Epsilon Closure:" << std::endl;
+    for (int i = 0; i < epsilon_closure_.size(); i++) {
+        os << "state " << i << ": ";
+        for (auto s : epsilon_closure_[i]) {
+            os << s << ' ';
+        }
+        os << std::endl;
+    }
 }
 
 } // namespace sangyu

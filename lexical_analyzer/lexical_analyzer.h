@@ -2,25 +2,16 @@
 #define LEXICAL_ANALYZER_H
 
 #include <fstream>
+#include <memory>
+#include <vector>
 
 #include "dfa.h"
 
 namespace sangyu {
 
-class LexicalAnayzer {
-private:
-    DFA dfa_;
-
+class LexicalAnalyzer {
 public:
-    LexicalAnayzer(std::fstream& source);
-    ~LexicalAnayzer() = default;
-
-private:
-    LexicalAnayzer() = delete;
-    LexicalAnayzer(const LexicalAnayzer&) = delete;
-    LexicalAnayzer(LexicalAnayzer&&) = delete;
-    void operator=(const LexicalAnayzer&) = delete;
-    void operator=(LexicalAnayzer&&) = delete;
+    LexicalAnalyzer(std::vector<std::unique_ptr<DFA>>);
 };
 
 } // namespace sangyu

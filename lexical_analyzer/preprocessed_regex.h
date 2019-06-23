@@ -2,6 +2,7 @@
 #define PREPROCESSED_REGEX_H
 
 #include <fstream>
+#include <iostream>
 #include <list>
 #include <set>
 #include <string>
@@ -38,7 +39,7 @@ public:
     ~PreprocessedRegex() = default;
     PreprocessedRegex(const std::string& source);
     const std::string& GetValue(void) const;
-    std::string Test(void);
+    void Test(std::ostream& os = std::cout);
 
 private:
     PreprocessedRegex() = delete;

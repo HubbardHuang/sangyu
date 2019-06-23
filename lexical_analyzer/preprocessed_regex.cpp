@@ -150,11 +150,18 @@ PreprocessedRegex::ProcessExtensionSyntax(std::list<unit_type>& buffer) {
         } else if (*left == '\\' && *right == '\\') {
             left = buffer.erase(left);
             right++;
-        }
-        if (right != buffer.end()) {
+            if (right != buffer.end()) {
+                ++left;
+                ++right;
+            }
+        } else {
             ++left;
             ++right;
         }
+        // if (right != buffer.end()) {
+        //     ++left;
+        //     ++right;
+        // }
     }
 }
 
@@ -214,8 +221,38 @@ PreprocessedRegex::AddStartSymbolAndStopSymbol(std::list<unit_type>& buffer) {
     buffer.push_back(kStopSymbol_);
 }
 
-std::string
-PreprocessedRegex::Test(void) {
+// std::string
+// PreprocessedRegex::Test(void) {
+//     std::string result;
+//     for (auto ch = preprocessed_regex_.begin(); ch !=
+//     preprocessed_regex_.end();
+//          ch++) {
+//         std::string curr;
+//         if (*ch == kOrOperator_) {
+//             curr = "|";
+//         } else if (*ch == kClosureOperator_) {
+//             curr = "*";
+//         } else if (*ch == kLeftRoundBracket_) {
+//             curr = "(";
+//         } else if (*ch == kRightRoundBracket_) {
+//             curr = ")";
+//         } else if (*ch == kJoinOperator_) {
+//             curr = "&";
+//         } else if (*ch == '|' || *ch == '*' || *ch == '(' || *ch == ')') {
+//             curr =
+//               std::string("\\") + static_cast<std::string::value_type>(*ch);
+//         } else {
+//             curr = static_cast<std::string::value_type>(*ch);
+//         }
+//         if (!curr.empty()) {
+//             result += curr;
+//         }
+//     }
+//     return result;
+// }
+
+void
+PreprocessedRegex::Test(std::ostream& os) {
     std::string result;
     for (auto ch = preprocessed_regex_.begin(); ch != preprocessed_regex_.end();
          ch++) {
@@ -240,7 +277,8 @@ PreprocessedRegex::Test(void) {
             result += curr;
         }
     }
-    return result;
+
+    os << "Preprocessed regex: " << result << std::endl;
 }
 
 } // namespace sangyu

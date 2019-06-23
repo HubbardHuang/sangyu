@@ -77,8 +77,8 @@ PostfixRegex::ToPostfixExpression(const std::string& source) {
     return std::string(result.begin(), result.end());
 }
 
-std::string
-PostfixRegex::Test(void) {
+void
+PostfixRegex::Test(std::ostream& os) {
     std::string result;
     for (auto ch = postfix_regex_.begin(); ch != postfix_regex_.end(); ch++) {
         std::string curr;
@@ -102,7 +102,7 @@ PostfixRegex::Test(void) {
             result += curr;
         }
     }
-    return result;
+    os << "Postfix regex: " << result << std::endl;
 }
 
 } // namespace sangyu
