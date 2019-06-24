@@ -2,7 +2,7 @@
 
 int
 main(void) {
-    int a[100]={0};
+    int inta[100]={0};
     int a = 1; // comment 1
     char c = '\n';
     const char* s = "Can you say \"Hello World\"?";

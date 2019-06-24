@@ -9,54 +9,40 @@
 
 namespace sangyu {
 
-enum TokenType {
-    kNum = 128,
-    kId,
-
-    kInt,
-    kChar,
-    kConst,
-    kReturn,
-    kInclude,
-
-    kCharacterLiteral,
-    kStringLiteral,
-    kComment
-};
-
 struct Token {
+    using Type = std::string;
+
+    static const Type kNum;
+    static const Type kId;
+    static const Type kLtrChar;
+    static const Type kLtrStr;
+    static const Type kComment;
+
     std::string name;
-    int type;
-    Token(const std::string& n, int t);
+    Type type;
+    Token(const std::string& n, const Type& t);
     Token(const Token&);
     Token() = delete;
 };
 
-enum class DfaType {
-    kSpace,
-    kPunctuation,
-    kKeyword,
-    kNum,
-    kId,
-    kComment,
-    kCharacterLiteral,
-    kStringLiteral
-};
-
-struct DfaAndType {
-    std::shared_ptr<DFA> dfa;
-    DfaType type;
-    DfaAndType(std::shared_ptr<DFA> d, DfaType t);
-    DfaAndType(const DfaAndType&);
-    DfaAndType() = delete;
+enum DfaType {
+    kSpaceDfa = 0, // If the first one isn't 0, 'std::bad_alloc' will be thrown
+    kPunctuationDfa,
+    kKeywordDfa,
+    kNumDfa,
+    kIdDfa,
+    kCharacterLiteralDfa,
+    kStringLiteralDfa,
+    kCommentDfa
 };
 
 class LexicalAnalyzer {
 private:
-    std::vector<DfaAndType> analyzer_;
+    std::vector<std::shared_ptr<DFA>> analyzer_;
 
 public:
-    LexicalAnalyzer(const std::vector<DfaAndType>& analyzer);
+    LexicalAnalyzer(
+      const std::vector<std::pair<std::shared_ptr<DFA>, DfaType>>& analyzer);
     ~LexicalAnalyzer() = default;
 
 public:
