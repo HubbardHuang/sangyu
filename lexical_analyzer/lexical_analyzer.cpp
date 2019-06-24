@@ -27,7 +27,7 @@ LexicalAnalyzer::LexicalAnalyzer(
 }
 
 std::vector<sangyu::Token>
-LexicalAnalyzer::Run(std::fstream& file) {
+LexicalAnalyzer::Run(std::fstream& file, std::ostream& os) {
     std::vector<Token> result;
     while (!file.eof()) {
         bool none_match = true;
@@ -71,10 +71,10 @@ LexicalAnalyzer::Run(std::fstream& file) {
         }
         if (none_match) {
             char c = file.get();
-
-            // none_match = false;
-            // // Error
-            // return {};
+            none_match = false;
+            // Error
+            os << "Unrecognized symbol " << c << "." << std::endl;
+            return {};
         }
     }
     return result;

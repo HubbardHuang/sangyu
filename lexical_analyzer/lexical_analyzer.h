@@ -46,7 +46,7 @@ public:
     ~LexicalAnalyzer() = default;
 
 public:
-    std::vector<Token> Run(std::fstream& file);
+    std::vector<Token> Run(std::fstream& file, std::ostream& os = std::cout);
 
 private:
     LexicalAnalyzer() = delete;
